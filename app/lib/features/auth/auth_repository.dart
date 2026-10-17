@@ -132,7 +132,7 @@ class AuthRepository {
       // Staff username (e.g. "warden") — accepted by the backend.
       body['student_id'] = trimmed;
     }
-    final data = await _api.post('/api/v1/auth/login', body: body)
+    final data = await _api.post('/v1/auth/login', body: body)
         as Map<String, dynamic>;
     return _parseLogin(data);
   }
@@ -141,18 +141,18 @@ class AuthRepository {
   /// the server never creates an account from this call.
   Future<LoginResult> loginWithGoogle(String idToken) async {
     final data = await _api.post(
-      '/api/v1/auth/google',
+      '/v1/auth/google',
       body: {'id_token': idToken},
     ) as Map<String, dynamic>;
     return _parseLogin(data);
   }
 
   Future<Student> me() async {
-    final data = await _api.get('/api/v1/auth/me') as Map<String, dynamic>;
+    final data = await _api.get('/v1/auth/me') as Map<String, dynamic>;
     return Student.fromJson(data);
   }
 
-  Future<void> logout() => _api.post('/api/v1/auth/logout');
+  Future<void> logout() => _api.post('/v1/auth/logout');
 
   LoginResult _parseLogin(Map<String, dynamic> data) => LoginResult(
     accessToken: data['access_token'] as String,

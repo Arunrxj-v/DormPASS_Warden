@@ -11,7 +11,7 @@ class WardenRepository {
 
   final ApiClient _api;
 
-  static const _base = '/api/v1/warden';
+  static const _base = '/v1/warden';
 
   // ---------------------------------------------------------------- read
 

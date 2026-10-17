@@ -28,6 +28,6 @@ class PublicConfig {
 }
 
 final publicConfigProvider = FutureProvider<PublicConfig>((ref) async {
-  final data = await ref.watch(apiClientProvider).get('/api/v1/config/public');
+  final data = await ref.watch(apiClientProvider).get('/v1/config/public');
   return PublicConfig.fromJson(data as Map<String, dynamic>);
 });

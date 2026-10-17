@@ -82,7 +82,7 @@ ApiClient _transportClient(
 DioException _transportError(DioExceptionType type) => DioException(
   requestOptions: RequestOptions(
     baseUrl: 'http://api.test',
-    path: '/api/v1/warden/students',
+    path: '/v1/warden/students',
   ),
   type: type,
 );
@@ -98,7 +98,7 @@ void main() {
         },
       }));
 
-      final ex = await _expectFailure(client.get('/api/v1/attendance/status'));
+      final ex = await _expectFailure(client.get('/v1/attendance/status'));
       expect(ex.code, 'duplicate_attendance');
       expect(ex.message, contains('already marked'));
       expect(ex.details['date'], '2026-10-13');
@@ -114,7 +114,7 @@ void main() {
       }));
 
       final ex = await _expectFailure(
-        client.post('/api/v1/attendance/verify', body: const {}),
+        client.post('/v1/attendance/verify', body: const {}),
       );
       expect(ex.code, 'outside_geofence');
       expect(ex.details['distance_m'], 420.5);
@@ -122,13 +122,13 @@ void main() {
 
     test('non-envelope JSON 401 falls back to token_invalid', () async {
       final client = _clientWith(401, '{"detail":"Not authenticated"}');
-      final ex = await _expectFailure(client.get('/api/v1/auth/me'));
+      final ex = await _expectFailure(client.get('/v1/auth/me'));
       expect(ex.code, 'token_invalid');
     });
 
     test('non-envelope 429 maps to rate_limited', () async {
       final client = _clientWith(429, '{"detail":"slow down"}');
-      final ex = await _expectFailure(client.get('/api/v1/attendance/verify'));
+      final ex = await _expectFailure(client.get('/v1/attendance/verify'));
       expect(ex.code, 'rate_limited');
     });
 
@@ -145,7 +145,7 @@ void main() {
         hasNetwork: () async => true,
       );
 
-      final ex = await _expectFailure(client.get('/api/v1/warden/students'));
+      final ex = await _expectFailure(client.get('/v1/warden/students'));
       expect(ex.code, 'local_server_error');
       // Server-reachable but errored: the message names the address and the
       // HTTP status so the state cannot be confused with a network failure.
@@ -162,7 +162,7 @@ void main() {
         },
       }));
 
-      final ex = await _expectFailure(client.get('/api/v1/warden/students'));
+      final ex = await _expectFailure(client.get('/v1/warden/students'));
       expect(ex.code, 'internal_error');
       expect(ex.message, contains('Database exploded'));
     });
@@ -182,7 +182,7 @@ void main() {
       );
 
       final ex = await _expectFailure(
-        client.post('/api/v1/auth/login', body: const {}),
+        client.post('/v1/auth/login', body: const {}),
       );
       expect(ex.code, 'local_api_not_hostelpass');
       // Actionable: names the address and the HTTP status it got.
@@ -206,7 +206,7 @@ void main() {
         hasNetwork: () async => true,
       );
 
-      final ex = await _expectFailure(client.post('/api/v1/auth/login', body: const {}));
+      final ex = await _expectFailure(client.post('/v1/auth/login', body: const {}));
       expect(ex.code, 'local_api_not_hostelpass');
     });
 
@@ -235,7 +235,7 @@ void main() {
         hasNetwork: () async => false,
       );
 
-      final ex = await _expectFailure(client.get('/api/v1/warden/students'));
+      final ex = await _expectFailure(client.get('/v1/warden/students'));
       expect(ex.code, 'local_device_offline');
     });
 
@@ -246,7 +246,7 @@ void main() {
         hasNetwork: () async => true,
       );
 
-      final ex = await _expectFailure(client.get('/api/v1/warden/students'));
+      final ex = await _expectFailure(client.get('/v1/warden/students'));
       expect(ex.code, 'local_api_unreachable');
       // The whole point of the distinction: the user is told the phone IS
       // online and WHICH address failed, instead of "no internet".
@@ -261,7 +261,7 @@ void main() {
         hasNetwork: () async => false,
       );
 
-      final ex = await _expectFailure(client.get('/api/v1/warden/students'));
+      final ex = await _expectFailure(client.get('/v1/warden/students'));
       expect(ex.code, 'local_device_offline');
     });
 
@@ -271,7 +271,7 @@ void main() {
         hasNetwork: () async => true,
       );
 
-      final ex = await _expectFailure(client.get('/api/v1/warden/students'));
+      final ex = await _expectFailure(client.get('/v1/warden/students'));
       expect(ex.code, 'local_api_unreachable');
     });
 
@@ -282,7 +282,7 @@ void main() {
         hasNetwork: () async => true,
       );
 
-      final ex = await _expectFailure(client.get('/api/v1/warden/students'));
+      final ex = await _expectFailure(client.get('/v1/warden/students'));
       expect(ex.code, 'local_bad_certificate');
       expect(ex.message, contains('http://api.test'));
     });

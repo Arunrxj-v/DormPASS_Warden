@@ -61,7 +61,17 @@ class PassiveAntiSpoofVerifier implements LivenessVerifier {
 
   late final _preds = Float32List(8);
   late final _mask = Float32List(8);
-  late final _output = [_preds, _mask];
+
+  // Raw little-endian float32 byte buffers for the two output heads.
+  //
+  // tflite_flutter's run() computes the shape of a flat Float32List input as
+  // [input.length] and RESIZES the model input to that 1-D shape; the first
+  // op (Conv2D) requires 4-D input, so AllocateTensors fails with
+  // `Bad state: failed precondition`. Uint8List inputs skip that shape path
+  // (no resize) and are copied in verbatim; Uint8List outputs are copied back
+  // verbatim. Same root cause + fix as face_embedder.dart.
+  late final _predsBytes = Uint8List(8 * 4);
+  late final _maskBytes = Uint8List(8 * 4);
 
   @override
   LivenessResult verify(img.Image faceRgb) {
@@ -81,7 +91,12 @@ class PassiveAntiSpoofVerifier implements LivenessVerifier {
         input[i++] = p.b.toDouble() / 255.0;
       }
     }
-    _interpreter.run(input, _output);
+    _interpreter.runForMultipleInputs(
+      [input.buffer.asUint8List()],
+      {0: _predsBytes, 1: _maskBytes},
+    );
+    _decodeF32(_predsBytes, _preds);
+    _decodeF32(_maskBytes, _mask);
     var score = 0.0;
     for (var k = 0; k < 8; k++) {
       score += _preds[k].abs() * _mask[k];
@@ -92,6 +107,15 @@ class PassiveAntiSpoofVerifier implements LivenessVerifier {
       score: score,
       method: method,
     );
+  }
+
+  /// Copies a little-endian float32 byte buffer into [dst].
+  static void _decodeF32(Uint8List bytes, Float32List dst) {
+    final bd =
+        ByteData.view(bytes.buffer, bytes.offsetInBytes, bytes.lengthInBytes);
+    for (var i = 0; i < dst.length; i++) {
+      dst[i] = bd.getFloat32(i * 4, Endian.little);
+    }
   }
 
   void dispose() => _interpreter.close();

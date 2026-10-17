@@ -87,7 +87,7 @@ void main() {
       await AuthRepository(client)
           .login(identifier: '  warden  ', password: 'pw');
 
-      expect(adapter.last!.path, endsWith('/api/v1/auth/login'));
+      expect(adapter.last!.path, endsWith('/v1/auth/login'));
       final body = _sentBody(adapter.last!);
       expect(body.keys, unorderedEquals(['student_id', 'password']));
       expect(body['student_id'], 'warden', reason: 'input must be trimmed');
@@ -111,7 +111,7 @@ void main() {
     test('Google sign-in posts only the ID token', () async {
       final (client, adapter) = _client(body: _loginOk);
       await AuthRepository(client).loginWithGoogle('id-token-value');
-      expect(adapter.last!.path, endsWith('/api/v1/auth/google'));
+      expect(adapter.last!.path, endsWith('/v1/auth/google'));
       final body = _sentBody(adapter.last!);
       expect(body.keys, ['id_token']);
     });

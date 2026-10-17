@@ -17,21 +17,21 @@ import 'package:flutter/foundation.dart';
 ///
 ///   # One-off override:
 ///   flutter build apk --release \
-///     --dart-define=API_BASE_URL=https://server.tailda589d.ts.net/dormpass
+///     --dart-define=API_BASE_URL=https://server.tailda589d.ts.net/api
 ///
-/// Note: repositories append `/api/v1/...` to this base, so the value is the
-/// SERVER ROOT (optionally with a path prefix such as `/dormpass`), never
-/// including `/api/v1` itself.
+/// Note: repositories append `/v1/...` to this base, so the value is the
+/// API MOUNT POINT, never including `/v1` itself. The production value
+/// carries the `/api` mount (the reverse proxy serves the FastAPI app
+/// there); the local dev backend mounts the same app at `/api` too.
 abstract final class Env {
   /// Development default — the Android emulator's alias for the host machine.
   /// Unreachable from a physical phone by design; release builds never use it.
-  static const _devApiBaseUrl = 'http://10.0.2.2:8000';
+  static const _devApiBaseUrl = 'http://10.0.2.2:8000/api';
 
   /// Production default — the HostelPass home server, HTTPS, behind the
-  /// site's reverse proxy under the `/dormpass` prefix (same origin as the
-  /// Admin Console). Publicly resolvable, so phones reach it over any
-  /// network without Tailscale.
-  static const _prodApiBaseUrl = 'https://server.tailda589d.ts.net/dormpass';
+  /// site's reverse proxy at the `/api` mount. Publicly resolvable, so
+  /// phones reach it over any network without Tailscale.
+  static const _prodApiBaseUrl = 'https://server.tailda589d.ts.net/api';
 
   /// Build-time override from --dart-define / --dart-define-from-file.
   static const _override = String.fromEnvironment('API_BASE_URL');

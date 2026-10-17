@@ -36,7 +36,7 @@ Default base URL targets the Android emulator host loopback
 (`http://10.0.2.2:8000`); override with:
 
 ```
-flutter run --dart-define=API_BASE_URL=http://<server>:8000
+flutter run --dart-define=API_BASE_URL=http://<server>:8000/api
 ```
 
 `android/app/src/main/res/xml/network_security_config.xml` allow-lists
